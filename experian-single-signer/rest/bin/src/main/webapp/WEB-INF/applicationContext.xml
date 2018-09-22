@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:beans="http://www.springframework.org/schema/beans"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans     
+				           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+				           http://www.springframework.org/schema/context 
+				           http://www.springframework.org/schema/context/spring-context-4.3.xsd
+				           http://www.springframework.org/schema/mvc
+			        	   http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+	  
+	<!-- <context:annotation-config/> -->
+	  
+	<context:component-scan base-package="br.com.experian.single.signer.core" />
+	<context:component-scan base-package="br.com.experian.single.signer.rest" />
+	
+	<mvc:annotation-driven />
+
+	<!-- Injecao do dataSource nos DAOs via xml, pois o JDBC Dao Suport nao permite a sobrescrita do setter 
+	<beans:bean id="parametrosDao" class="br.com.experian.single.signer.rest.dao.ParametrosDao">
+		<property name="dataSource" ref="dbDataSource" />
+	</beans:bean>
+ -->
+	<beans:bean id="dbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<beans:property name="jndiName" value="java:comp/env/jdbc/datasource"/>
+	</beans:bean>
+	
+</beans>

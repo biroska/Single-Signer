@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+	<security:http realm="Serasa Experian" create-session="stateless">
+		<security:csrf disabled="true"/> 
+		<security:http-basic authentication-details-source-ref="experianAuthenticationDetailsSource"/>
+		<!-- <security:intercept-url pattern="/rest/myresource/hello" access="hasRole('ADMIN')" />  -->
+		<security:intercept-url pattern="/rest/**" access="isAuthenticated()" />
+	</security:http>
+
+	<security:authentication-manager alias="authManager">
+	  <security:authentication-provider ref="mainframeAuthProvider" />
+	</security:authentication-manager>
+	
+	<!-- Property Placeholder Configurer -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:experian-single-signer-rest.properties</value>
+				<value>classpath:experian-single-signer-rest-${environment.name}.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="experianAuthenticationDetailsSource" class="br.com.experian.single.signer.rest.security.ExperianAuthenticationDetailsSource" />
+    
+    <bean id="mainframeAuthProvider" class="br.com.experian.single.signer.rest.security.MainframeAuthenticationProvider"
+    	p:authServiceUrl="${authService.url}">
+    	<property name="roleMapper">
+    		<bean class="br.com.experian.single.signer.rest.security.RoleMapper">
+    			<constructor-arg>
+		    		<map value-type="java.util.List">
+		    			<entry key="ADMIN">
+		    				<list>
+		    					<value>AI01</value>
+		    					<value>BM01</value>
+		    				</list>
+		    			</entry>
+		    			<entry key="ADMIN2">
+		    				<list>
+		    					<value>XXXX</value>
+		    					<value>ABCD</value>
+		    				</list>
+		    			</entry>
+		    		</map>
+		    	</constructor-arg>
+    		</bean>
+    	</property>
+    </bean>
+	
+</beans>

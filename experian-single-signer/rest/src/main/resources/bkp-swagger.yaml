@@ -1,0 +1,84 @@
+---
+swagger: '2.0'
+info:
+  description: This API allows a caller to request summarized or detailed information about a company's debts.
+  version: 1.0.0
+  title: Business Debts Records
+  termsOfService: https://dev-us-api.experian.com/terms-of-service
+  contact:
+    name: API Team
+    url: https://dev-us-api.experian.com/contact
+    email: apiteam@br.experian.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: dev-us-api.experian.com
+basePath: "/businessinformation/businessdebtsrecords/v1"
+schemes:
+  - https
+securityDefinitions:
+  OauthSecurity:
+    type: oauth2
+    flow: password
+    tokenUrl: https://dev-us-api.experian.com/br/oauth/v1/token
+    scopes: 
+      user: "user Scope"
+paths:
+  "/debtssummaries/{companyId}":
+    get:
+      summary: List of company's debts in summarized form.
+      description: Retrieve summarized information about debts occurrences of a given company grouped by debts types, total debts amount and quantity of debts.
+      operationId: retrieveDebtsSummaries
+      security:
+        - OauthSecurity: []
+      tags:
+        - Debts Summaries
+      produces:
+        - application/json
+      responses:
+        '401':
+          description: Invalid or Expired Access Token
+        '500':
+          description: Invalid companyId 
+        '200':
+          description: OK
+          schema: 
+            type: 'array'
+            items:
+              $ref: '#/definitions/Resumo'
+      parameters:
+        - name: Content-Type
+          in: header
+          default: application/json
+          description: Content-Type field is to describe the data contained in the body.
+          required: true
+          type: string
+        - name: Authorization
+          in: header
+          description: The client sends the access token preceded by Bearer.
+          required: true
+          type: string
+        - name: companyId
+          in: path
+          description: Company ID
+          required: true
+          type: integer
+          format: int64
+definitions:
+  Resumo:
+    description: ''
+    required:
+      - updateDate
+      - quantity
+      - total
+      - type
+    properties:
+      updateDate:
+        type: string
+        format: date-time
+      quantity:
+        type: number
+      total:
+        type: number
+      type:
+        type: string
